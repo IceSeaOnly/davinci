@@ -21,7 +21,9 @@ public abstract class BaseService<T extends BaseEntity> {
     private SimpleJpaRepository<T, Long> daoHolder;
 
     protected JpaRepository<T, Long> getDao() {
-        if (daoHolder != null) return daoHolder;
+        if (daoHolder != null) {
+            return daoHolder;
+        }
         daoHolder = new SimpleJpaRepository(getTypeArguement(), entityManager);
         return daoHolder;
     }

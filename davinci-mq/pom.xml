@@ -16,8 +16,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>site.binghai.davinci</groupId>
+            <artifactId>davinci-common</artifactId>
+            <version>${root.version}</version>
         </dependency>
     </dependencies>
     

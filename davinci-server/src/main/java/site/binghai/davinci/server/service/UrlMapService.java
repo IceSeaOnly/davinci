@@ -1,5 +1,6 @@
 package site.binghai.davinci.server.service;
 
+import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Service;
 import site.binghai.davinci.server.entity.UrlMapEntity;
 
@@ -8,5 +9,7 @@ import site.binghai.davinci.server.entity.UrlMapEntity;
  * GitHub: https://github.com/IceSeaOnly
  */
 @Service
+@Log4j
 public class UrlMapService extends BaseService<UrlMapEntity> {
+
 }

@@ -1,17 +1,18 @@
 package site.binghai.davinci;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import site.binghai.davinci.mq.socket.ServerListener;
 
 /**
  * Created by IceSea on 2018/3/31.
  * GitHub: https://github.com/IceSeaOnly
  */
-@SpringBootApplication
-@ComponentScan("site.binghai.produced.*")
+
 public class App {
     public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
+        try {
+            new ServerListener().start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
