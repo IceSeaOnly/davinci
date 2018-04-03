@@ -6,11 +6,12 @@ import site.binghai.davinci.common.sockets.Server;
 /**
  * Created by IceSea on 2018/4/2.
  * GitHub: https://github.com/IceSeaOnly
+ * 等待客户端连接
  */
-public class ServerListener extends Server {
+public class ClientListener extends Server {
     private ClientManager clientManager;
 
-    public ServerListener() {
+    public ClientListener() {
         clientManager = new ClientManager();
         clientManager.start();
     }

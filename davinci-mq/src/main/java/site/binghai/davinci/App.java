@@ -1,6 +1,6 @@
 package site.binghai.davinci;
 
-import site.binghai.davinci.mq.socket.ServerListener;
+import site.binghai.davinci.mq.socket.ClientListener;
 
 /**
  * Created by IceSea on 2018/3/31.
@@ -10,7 +10,7 @@ import site.binghai.davinci.mq.socket.ServerListener;
 public class App {
     public static void main(String[] args) {
         try {
-            new ServerListener().start();
+            new ClientListener().start();
         } catch (Exception e) {
             e.printStackTrace();
         }

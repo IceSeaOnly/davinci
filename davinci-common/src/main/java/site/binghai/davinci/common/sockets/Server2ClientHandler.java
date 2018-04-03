@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 public abstract class Server2ClientHandler extends ChannelInboundHandlerAdapter {
     private ChannelHandlerContext channelHandlerContext;
     private boolean actived = false;
+    private Boolean targetIsDavinciClient;
 
     public boolean isActived() {
         return actived;
@@ -29,6 +30,7 @@ public abstract class Server2ClientHandler extends ChannelInboundHandlerAdapter 
         System.out.println(ctx.channel().localAddress().toString() + " server channel active!");
         channelHandlerContext = ctx;
         actived = true;
+        targetIsDavinciClient = null;
     }
 
     /**
@@ -93,6 +95,14 @@ public abstract class Server2ClientHandler extends ChannelInboundHandlerAdapter 
         actived = false;
         ctx.close();
         whenExceptionCloseContext(cause);
+    }
+
+    public Boolean getTargetIsDavinciClient() {
+        return targetIsDavinciClient;
+    }
+
+    public void setTargetIsDavinciClient(Boolean targetIsDavinciClient) {
+        this.targetIsDavinciClient = targetIsDavinciClient;
     }
 
     protected abstract void whenExceptionCloseContext(Throwable cause);

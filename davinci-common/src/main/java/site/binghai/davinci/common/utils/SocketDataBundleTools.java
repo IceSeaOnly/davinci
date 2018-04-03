@@ -25,4 +25,24 @@ public class SocketDataBundleTools {
         DataBundle dataBundle = obj.toJavaObject(DataBundle.class);
         return dataBundle.getData();
     }
+
+    public static DataBundle decodeAsDataBundle(String data) {
+        JSONObject obj = JSONObject.parseObject(data);
+        DataBundle dataBundle = obj.toJavaObject(DataBundle.class);
+        return dataBundle;
+    }
+
+    /**
+     * 连接MQ的客户端表名自己身份：Davinci客户端
+     * */
+    public static String asClient(){
+        return toPostData(encodeData("CLIENT",DataPackageEnum.DAVINCI_CLIENT));
+    }
+
+    /**
+     * 连接MQ的客户端表名自己身份：Davinci服务端
+     * */
+    public static String asServer(){
+        return toPostData(encodeData("CLIENT",DataPackageEnum.DAVINCI_SERVER));
+    }
 }

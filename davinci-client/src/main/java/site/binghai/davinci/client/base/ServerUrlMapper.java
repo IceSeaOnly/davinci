@@ -13,7 +13,7 @@ import site.binghai.davinci.common.utils.HttpUtils;
  * GitHub: https://github.com/IceSeaOnly
  * 相关服务器地址映射工具
  */
-@Component
+//@Component
 public class ServerUrlMapper implements InitializingBean {
     private static JSONObject map;
     @Autowired

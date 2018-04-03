@@ -17,6 +17,10 @@ public class TimeTools {
         return System.currentTimeMillis();
     }
 
+    public static int currentSecond(){
+        return Long.valueOf(currentTS()/1000).intValue();
+    }
+
     public static String format(Long date) {
         try {
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
