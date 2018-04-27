@@ -6,7 +6,34 @@
 
     <groupId>site.binghai.davinci</groupId>
     <artifactId>davinci-core</artifactId>
-    <version>${project.version}</version>
+    <version>${root.version}</version>
 
-    
+    <parent>
+        <groupId>site.binghai.davinci</groupId>
+        <artifactId>davinci</artifactId>
+        <version>${root.version}</version>
+    </parent>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>site.binghai.davinci</groupId>
+            <artifactId>davinci-common</artifactId>
+            <version>${root.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 </project>

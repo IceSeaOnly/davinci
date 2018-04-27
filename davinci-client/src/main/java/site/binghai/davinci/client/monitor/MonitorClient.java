@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
  * Created by IceSea on 2018/4/1.
  * GitHub: https://github.com/IceSeaOnly
  */
-//@Component
+@Component
 @Log4j
 public class MonitorClient implements InitializingBean {
     private static ConcurrentLinkedQueue<MonitorReport> reports;
@@ -34,7 +34,7 @@ public class MonitorClient implements InitializingBean {
         reports.add(t);
     }
 
-    public void push(Collection ts) {
+    public void push(Collection<MonitorReport> ts) {
         reports.addAll(ts);
     }
 

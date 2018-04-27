@@ -26,6 +26,7 @@ public abstract class Client2ServerHandler extends SimpleChannelInboundHandler<B
 
     /**
      * 向服务端发送数据
+     * 激活后随即发送一个数据包表名自己是davinci客户端还是davinci服务端
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
