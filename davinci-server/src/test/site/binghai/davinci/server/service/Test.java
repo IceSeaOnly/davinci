@@ -3,9 +3,7 @@ package site.binghai.davinci.server.service;
 import com.alibaba.fastjson.JSONObject;
 import site.binghai.davinci.common.utils.HttpUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,5 +58,18 @@ public class Test {
         System.out.println(!b ^ c);
         System.out.println(!d ^ c);
         System.out.println(!d ^ c);
+    }
+
+    @org.junit.Test
+    public void testMap() throws Exception {
+        Map<String,Set<String>> maps = new HashMap<>();
+        Set<String> sets = new HashSet<>();
+        sets.add("A");
+        sets.add("B");
+        sets.add("C");
+        sets.add("D");
+        maps.put("keys",sets);
+
+        System.out.println(JSONObject.toJSONString(maps));
     }
 }

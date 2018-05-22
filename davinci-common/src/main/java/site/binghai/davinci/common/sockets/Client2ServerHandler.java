@@ -18,27 +18,27 @@ import java.nio.charset.Charset;
 
 public abstract class Client2ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
     private ChannelHandlerContext channelHandlerContext;
-    private boolean asDavinciClient;
+    private boolean asDavinciWorker;
 
-    public Client2ServerHandler(boolean asDavinciClient) {
-        this.asDavinciClient = asDavinciClient;
+    public Client2ServerHandler(boolean asDavinciWorker) {
+        this.asDavinciWorker = asDavinciWorker;
     }
 
     /**
      * 向服务端发送数据
-     * 激活后随即发送一个数据包表名自己是davinci客户端还是davinci服务端
+     * 激活后随即发送一个数据包表名自己是davinci工作机还是davinci种子机
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("channel to server opened: " + ctx.channel().localAddress() + "channelActive");
+        System.out.println("channel to server opened: " + ctx.channel().localAddress() + " channelActive");
         channelHandlerContext = ctx;
-        post(asDavinciClient ? SocketDataBundleTools.asClient() : SocketDataBundleTools.asServer());
+        post(asDavinciWorker ? SocketDataBundleTools.asClient() : SocketDataBundleTools.asServer());
     }
 
     /**
      * 数据发送方法
      */
-    protected void post(Object data) {
+    public void post(Object data) {
         channelHandlerContext.writeAndFlush(Unpooled.copiedBuffer(data.toString(), CharsetUtil.UTF_8)); // 必须有flush
     }
 

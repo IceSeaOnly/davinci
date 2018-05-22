@@ -1,16 +1,9 @@
 package site.binghai.davinci.client.monitor;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import site.binghai.davinci.client.base.ServerUrlMapper;
-import site.binghai.davinci.common.enums.UrlEnum;
 import site.binghai.davinci.common.def.MonitorReport;
-import site.binghai.davinci.common.utils.HttpUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,8 +20,6 @@ import java.util.concurrent.Executors;
 public class MonitorClient implements InitializingBean {
     private static ConcurrentLinkedQueue<MonitorReport> reports;
     private ExecutorService executorService;
-    @Autowired
-    private ServerUrlMapper serverUrlMapper;
 
     public void push(MonitorReport t) {
         reports.add(t);
@@ -59,13 +50,6 @@ public class MonitorClient implements InitializingBean {
     }
 
     private void upload2Server(List<MonitorReport> pkg) {
-        JSONObject resp = HttpUtils.sendJSONPost(
-                serverUrlMapper.getUrl(UrlEnum.MONITOR_SERVER_IP),
-                null,
-                JSONArray.toJSONString(pkg));
 
-        if (resp == null) {
-            log.error("monitor message upload to server failed!");
-        }
     }
 }

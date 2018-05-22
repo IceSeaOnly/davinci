@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * GitHub: https://github.com/IceSeaOnly
  */
 public class ClientManager extends Thread {
+
     private static List<Server2ClientHandler> clients = new ArrayList<>();
     // MQ批量发送到客户端的数据队列
     private static ConcurrentLinkedQueue<DataBundle> toC = new ConcurrentLinkedQueue<>();
@@ -45,22 +46,28 @@ public class ClientManager extends Thread {
             return;
         }
 
+        System.out.println(rev);
+
+
+        // 连接后立即发送自己的身份码确定自己身份
         switch (dataBundle.getType()) {
             case DAVINCI_CLIENT:
-                System.out.println("A new Davinci Client Connected.");
+                System.out.println("A new Davinci worker Connected.");
                 server2ClientHandler.setTargetIsDavinciClient(Boolean.TRUE);
                 break;
             case DAVINCI_SERVER:
-                System.out.println("A new Davinci Server Connected.");
+                System.out.println("A new Davinci seed Connected.");
                 server2ClientHandler.setTargetIsDavinciClient(Boolean.FALSE);
                 break;
         }
+
 
         if (null == server2ClientHandler.getTargetIsDavinciClient()) {
             System.out.println("client can't be identified");
             return;
         }
 
+        // 其他传输消息过程直接确定身份
         if (server2ClientHandler.getTargetIsDavinciClient()) {
             toS.add(dataBundle);
         } else {
@@ -107,7 +114,10 @@ public class ClientManager extends Thread {
         toS.add(heartBeat);
     }
 
-    private void post(ConcurrentLinkedQueue<DataBundle> queue, boolean toClients) {
+    /**
+     * 下发消息给种子机或工作机
+     * */
+    private void post(ConcurrentLinkedQueue<DataBundle> queue, boolean toWorkers) {
         if (null == queue || queue.isEmpty()) {
             return;
         }
@@ -120,7 +130,7 @@ public class ClientManager extends Thread {
                 it.remove();
             } else {
                 if (s.getTargetIsDavinciClient() != null) {
-                    if (!toClients ^ s.getTargetIsDavinciClient()) {
+                    if (!toWorkers ^ s.getTargetIsDavinciClient()) {
                         s.post(SocketDataBundleTools.toPostData(data));
                     }
                 }

@@ -6,7 +6,12 @@
 
     <groupId>site.binghai.davinci</groupId>
     <artifactId>davinci-monitor</artifactId>
-    <version>${project.version}</version>
+    <version>${root.version}</version>
 
 
+    <parent>
+        <groupId>site.binghai.davinci</groupId>
+        <artifactId>davinci</artifactId>
+        <version>${root.version}</version>
+    </parent>
 </project>

@@ -8,7 +8,7 @@ import java.util.UUID;
 /**
  * Created by IceSea on 2018/4/2.
  * GitHub: https://github.com/IceSeaOnly
- * socket通信中的传输对象
+ * 种子机、工作机器通信中的传输对象
  */
 @Data
 public class DataBundle {
@@ -24,6 +24,6 @@ public class DataBundle {
         this.type = type;
     }
 
-    public DataBundle() {
+    private DataBundle() {
     }
 }

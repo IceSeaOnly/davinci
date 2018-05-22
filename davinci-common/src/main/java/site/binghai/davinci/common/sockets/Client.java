@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
  * GitHub: https://github.com/IceSeaOnly
  */
 public abstract class Client {
-    public void start() throws Exception {
+    public void setup() throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
@@ -41,7 +41,7 @@ public abstract class Client {
 
             ChannelFuture cf = b.connect().sync(); // 异步连接服务器
             System.out.println("server connected successfully!"); // 连接完成
-
+            onConnected();
             cf.channel().closeFuture().sync(); // 异步等待关闭连接channel
             System.out.println("connection closed."); // 关闭完成
 
@@ -50,9 +50,11 @@ public abstract class Client {
         }
     }
 
+    protected abstract void onConnected();
+
     protected abstract String getHost();
 
     protected abstract int getPort();
 
-    protected abstract ChannelHandler clientHandler();
+    public abstract ChannelHandler clientHandler();
 }
