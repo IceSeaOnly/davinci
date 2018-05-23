@@ -41,7 +41,7 @@ public class MethodMapService implements InitializingBean {
         mapChanged();
     }
 
-    private void mapChanged() {
+    public void mapChanged() {
         DataBundle dataBundle = new DataBundle(methodsMap, DataPackageEnum.SERVICE_MAP_DATA);
         ((Client2ServerHandler) mqConnector.clientHandler()).post(JSONObject.toJSONString(dataBundle));
     }

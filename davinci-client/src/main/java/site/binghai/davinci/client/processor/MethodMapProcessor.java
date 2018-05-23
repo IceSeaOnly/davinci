@@ -1,6 +1,7 @@
 package site.binghai.davinci.client.processor;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import site.binghai.davinci.client.reflect.MethodsMapper;
@@ -14,6 +15,7 @@ import java.util.*;
  * GitHub: https://github.com/IceSeaOnly
  */
 @Service
+@Log4j
 public class MethodMapProcessor extends BaseProcessor {
     @Autowired
     private MethodsMapper methodsMapper;
@@ -25,6 +27,8 @@ public class MethodMapProcessor extends BaseProcessor {
 
     @Override
     public void putData(Object data) {
+        log.info("updating remote services map...");
+
         Map<String, List<HostConfig>> maps = new HashMap<>();
         JSONObject obj = JSONObject.parseObject(data.toString());
         obj.keySet().forEach(v -> maps.put(v, obj.getJSONArray(v).toJavaList(HostConfig.class)));

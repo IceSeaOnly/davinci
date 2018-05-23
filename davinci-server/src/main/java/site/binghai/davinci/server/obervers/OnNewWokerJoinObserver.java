@@ -1,41 +1,34 @@
 package site.binghai.davinci.server.obervers;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import site.binghai.davinci.common.def.HostConfig;
 import site.binghai.davinci.common.enums.DataPackageEnum;
 import site.binghai.davinci.server.service.MethodMapService;
 
-import java.util.List;
-
 /**
- * Created by IceSea on 2018/5/21.
+ * Created by IceSea on 2018/5/23.
  * GitHub: https://github.com/IceSeaOnly
  */
 @Service
 @Log4j
-public class ProcessServicePostObserver extends BaseObserver {
+public class OnNewWokerJoinObserver extends BaseObserver {
     @Autowired
     private MethodMapService methodMapService;
 
     @Override
     public DataPackageEnum getAcceteType() {
-        return DataPackageEnum.POST_LOCAL_SERVICES;
+        return DataPackageEnum.DAVINCI_CLIENT;
     }
 
     @Override
     public void putData(Object data) {
-        JSONObject obj = (JSONObject) data;
-        HostConfig hostConfig = obj.getObject("host", HostConfig.class);
-        List<String> methods = obj.getJSONArray("methods").toJavaList(String.class);
-
-        methodMapService.updateMethods(hostConfig, methods);
-        log.info("method updated:" + obj.toJSONString());
+        log.info("new client joined so we broadcast the service map.");
+        methodMapService.mapChanged();
     }
 
     @Override
     protected void onBeanReady() {
+
     }
 }

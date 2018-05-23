@@ -14,6 +14,7 @@ import site.binghai.davinci.common.def.DataBundle;
 import site.binghai.davinci.common.enums.DataPackageEnum;
 import site.binghai.davinci.common.sockets.Client;
 import site.binghai.davinci.common.sockets.Client2ServerHandler;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -31,7 +32,11 @@ public class MQConnector extends Client implements InitializingBean, Application
 
     private Client2ServerHandler client2ServerHandler;
 
-    private ConcurrentHashMap<DataPackageEnum,BaseProcessor> processors;
+    private ConcurrentHashMap<DataPackageEnum, BaseProcessor> processors;
+
+    public void regProcessor(BaseProcessor processor) {
+        processors.put(processor.getAcceteType(), processor);
+    }
 
     /**
      * 连接“交管机”后，广播本地的服务
@@ -55,7 +60,6 @@ public class MQConnector extends Client implements InitializingBean, Application
     public ChannelHandler clientHandler() {
         return client2ServerHandler;
     }
-
 
 
     @Override
@@ -84,10 +88,10 @@ public class MQConnector extends Client implements InitializingBean, Application
             protected void serverMessageCome(String s) {
                 DataBundle dataBundle = JSONObject.parseObject(s, DataBundle.class);
                 BaseProcessor processor = processors.get(dataBundle.getType());
-                if(processor != null){
+                if (processor != null) {
                     processor.putData(dataBundle.getData());
-                }else{
-                    log.error("no processor for date type:"+dataBundle.getType());
+                } else {
+                    log.error("no processor for date type:" + dataBundle.getType());
                 }
             }
         };

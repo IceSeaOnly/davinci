@@ -12,6 +12,7 @@ import site.binghai.davinci.common.def.DataBundle;
 import site.binghai.davinci.common.enums.DataPackageEnum;
 import site.binghai.davinci.common.sockets.Client;
 import site.binghai.davinci.common.sockets.Client2ServerHandler;
+import site.binghai.davinci.common.utils.SocketDataBundleTools;
 import site.binghai.davinci.server.config.ConfigParams;
 import site.binghai.davinci.server.obervers.BaseObserver;
 
@@ -77,15 +78,22 @@ public class MQConnector extends Client implements InitializingBean, Application
 
             @Override
             protected void serverMessageCome(String s) {
-//                log.info("received message" + s);
-                DataBundle dataBundle = JSONObject.parseObject(s, DataBundle.class);
-                BaseObserver observer = observers.get(dataBundle.getType());
-                if(observer != null){
-                    observer.putData(dataBundle.getData());
-                }else{
-                    log.error("no processor for this message :"+s);
+                try {
+                    handleMessage(s);
+                } catch (Exception e) {
+                    log.error("handle message error!message:" + s, e);
                 }
             }
         };
+    }
+
+    private void handleMessage(String s) {
+        DataBundle dataBundle = SocketDataBundleTools.decodeAsDataBundle(s);
+        BaseObserver observer = observers.get(dataBundle.getType());
+        if (observer != null) {
+            observer.putData(dataBundle.getData());
+        } else {
+            log.error("no processor for this message :" + s);
+        }
     }
 }

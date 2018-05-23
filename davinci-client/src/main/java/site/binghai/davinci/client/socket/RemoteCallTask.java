@@ -2,7 +2,6 @@ package site.binghai.davinci.client.socket;
 
 import com.alibaba.fastjson.JSONObject;
 import site.binghai.davinci.client.reflect.Call;
-import site.binghai.davinci.common.sockets.Client;
 import site.binghai.davinci.common.sockets.Client2ServerHandler;
 
 import java.util.Map;
@@ -15,11 +14,11 @@ import static java.lang.Thread.sleep;
  * GitHub: https://github.com/IceSeaOnly
  */
 class RemoteCallTask implements Callable<Call> {
-    private Client client;
+    private Client2ServerHandler client;
     private Map<String, Call> futurePool;
     private Call call;
 
-    public RemoteCallTask(Client client, Map<String, Call> futurePool, Call call) {
+    public RemoteCallTask(Client2ServerHandler client, Map<String, Call> futurePool, Call call) {
         this.client = client;
         this.call = call;
         this.futurePool = futurePool;
@@ -27,8 +26,7 @@ class RemoteCallTask implements Callable<Call> {
 
     @Override
     public Call call() throws Exception {
-        Client2ServerHandler handler = (Client2ServerHandler) client.clientHandler();
-        handler.post(JSONObject.toJSONString(call));
+        client.post(JSONObject.toJSONString(call));
         return wait4Result();
     }
 

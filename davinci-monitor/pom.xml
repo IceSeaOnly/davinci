@@ -6,12 +6,12 @@
 
     <groupId>site.binghai.davinci</groupId>
     <artifactId>davinci-monitor</artifactId>
-    <version>${root.version}</version>
+    <version>1.0-SNAPSHOT</version>
 
 
     <parent>
         <groupId>site.binghai.davinci</groupId>
         <artifactId>davinci</artifactId>
-        <version>${root.version}</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 </project>

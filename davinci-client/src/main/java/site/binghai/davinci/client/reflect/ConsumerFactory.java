@@ -1,7 +1,4 @@
 package site.binghai.davinci.client.reflect;
-
-import site.binghai.davinci.client.socket.ServiceConnector;
-
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +13,7 @@ public class ConsumerFactory {
     public static Object getProxyBean(Class interfaceClass) {
         if (proxy.get(interfaceClass) == null) {
             Object obj = Proxy.newProxyInstance(interfaceClass.getClassLoader(),
-                    new Class[]{interfaceClass}, new ServiceInvocationHandler(interfaceClass,ServiceConnector.getInstance()));
+                    new Class[]{interfaceClass}, new ServiceInvocationHandler(interfaceClass));
             proxy.put(interfaceClass, obj);
             return obj;
         } else {

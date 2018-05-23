@@ -16,7 +16,7 @@ import java.nio.charset.Charset;
  */
 public abstract class Server {
 
-    public void start() throws Exception {
+    public void setup() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
 
         EventLoopGroup group = new NioEventLoopGroup();

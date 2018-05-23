@@ -7,6 +7,9 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by IceSea on 2018/4/2.
@@ -16,6 +19,8 @@ public abstract class Server2ClientHandler extends ChannelInboundHandlerAdapter 
     private ChannelHandlerContext channelHandlerContext;
     private boolean actived = false;
     private Boolean targetIsDavinciClient;
+    private BlockingQueue<Object> blockingQueue;
+
 
     public boolean isActived() {
         return actived;
@@ -31,6 +36,24 @@ public abstract class Server2ClientHandler extends ChannelInboundHandlerAdapter 
         channelHandlerContext = ctx;
         actived = true;
         targetIsDavinciClient = null;
+        blockingQueue = new LinkedBlockingQueue<>();
+        workerStart();
+    }
+
+    private final void workerStart() {
+        new Thread() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Object data = blockingQueue.take();
+                        channelHandlerContext.writeAndFlush(Unpooled.copiedBuffer(data.toString(), CharsetUtil.UTF_8)); // 必须有flush
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
     }
 
     /**
@@ -46,7 +69,7 @@ public abstract class Server2ClientHandler extends ChannelInboundHandlerAdapter 
     }
 
     public void post(Object data) {
-        channelHandlerContext.writeAndFlush(Unpooled.copiedBuffer(data.toString(), CharsetUtil.UTF_8));
+        blockingQueue.add(data);
     }
 
 
@@ -68,8 +91,14 @@ public abstract class Server2ClientHandler extends ChannelInboundHandlerAdapter 
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // 第一种：接收字符串时的处理
         ByteBuf buf = (ByteBuf) msg;
-        String rev = getMessage(buf);
-        clientMessageCome(rev);
+        String message = getMessage(buf);
+
+        while (message.contains("}{")) {
+            int idx = message.indexOf("}{");
+            clientMessageCome(message.substring(0, idx + 1));
+            message = message.substring(idx + 1, message.length());
+        }
+        clientMessageCome(message);
     }
 
 
@@ -80,8 +109,8 @@ public abstract class Server2ClientHandler extends ChannelInboundHandlerAdapter 
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         // 第一种方法：写一个空的buf，并刷新写出区域。完成后关闭sock channel连接。
 //        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
-        System.out.println("DONE!");
-        // ctx.flush();
+//        System.out.println("DONE!");
+//         ctx.flush();
         // ctx.flush(); //
         // 第二种方法：在client端关闭channel连接，这样的话，会触发两次channelReadComplete方法。
         // ctx.flush().close().sync(); // 第三种：改成这种写法也可以，但是这中写法，没有第一种方法的好。

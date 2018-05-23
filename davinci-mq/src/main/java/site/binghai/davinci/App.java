@@ -10,7 +10,7 @@ import site.binghai.davinci.mq.socket.ClientListener;
 public class App {
     public static void main(String[] args) {
         try {
-            new ClientListener().start();
+            new ClientListener().setup();
         } catch (Exception e) {
             e.printStackTrace();
         }

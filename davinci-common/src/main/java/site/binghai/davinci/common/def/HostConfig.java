@@ -22,7 +22,7 @@ public class HostConfig {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof HostConfig)) return false;
-        if (!super.equals(o)) return false;
+
         HostConfig that = (HostConfig) o;
         return Objects.equals(getIp(), that.getIp()) &&
                 Objects.equals(getPort(), that.getPort()) &&
@@ -31,6 +31,6 @@ public class HostConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getIp(), getPort(), getAppName());
+        return Objects.hash(getIp(), getPort(), getAppName());
     }
 }

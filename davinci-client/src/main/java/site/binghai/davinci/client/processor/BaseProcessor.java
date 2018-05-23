@@ -19,6 +19,7 @@ public abstract class BaseProcessor implements InitializingBean {
 
     @Override
     public final void afterPropertiesSet() throws Exception {
-
+        mqConnector.regProcessor(this);
+        onBeanReady();
     }
 }

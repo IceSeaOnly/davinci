@@ -6,6 +6,7 @@ import site.binghai.davinci.common.enums.DataPackageEnum;
 import site.binghai.davinci.common.sockets.Server2ClientHandler;
 import site.binghai.davinci.common.utils.SocketDataBundleTools;
 import site.binghai.davinci.common.utils.TimeTools;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,8 +47,6 @@ public class ClientManager extends Thread {
             return;
         }
 
-        System.out.println(rev);
-
 
         // 连接后立即发送自己的身份码确定自己身份
         switch (dataBundle.getType()) {
@@ -69,8 +68,10 @@ public class ClientManager extends Thread {
 
         // 其他传输消息过程直接确定身份
         if (server2ClientHandler.getTargetIsDavinciClient()) {
+            System.out.println("to Seed:" + rev);
             toS.add(dataBundle);
         } else {
+            System.out.println("to Worker:" + rev);
             toC.add(dataBundle);
         }
     }
@@ -116,7 +117,7 @@ public class ClientManager extends Thread {
 
     /**
      * 下发消息给种子机或工作机
-     * */
+     */
     private void post(ConcurrentLinkedQueue<DataBundle> queue, boolean toWorkers) {
         if (null == queue || queue.isEmpty()) {
             return;

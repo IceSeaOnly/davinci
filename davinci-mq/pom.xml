@@ -6,19 +6,19 @@
 
     <groupId>site.binghai.davinci</groupId>
     <artifactId>davinci-mq</artifactId>
-    <version>${root.version}</version>
+    <version>1.0-SNAPSHOT</version>
 
     <parent>
         <groupId>site.binghai.davinci</groupId>
         <artifactId>davinci</artifactId>
-        <version>${root.version}</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>site.binghai.davinci</groupId>
             <artifactId>davinci-common</artifactId>
-            <version>${root.version}</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     

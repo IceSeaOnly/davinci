@@ -36,6 +36,10 @@ public class LocalServiceProvider extends Server implements InitializingBean {
      * 发布本地服务
      */
     public void postService(Client2ServerHandler client2ServerHandler) {
+        if (contextListener.getServices().size() == 0){
+            log.info("no local method need to post.");
+            return;
+        }
         JSONObject obj = new JSONObject();
         obj.put("host", configAdapter.getThisAppHostConfig());
         obj.put("methods", contextListener.getServices().keySet());
@@ -68,5 +72,12 @@ public class LocalServiceProvider extends Server implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         executor = Executors.newCachedThreadPool();
+        new Thread(() -> {
+            try {
+                setup();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }

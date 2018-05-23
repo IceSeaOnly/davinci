@@ -12,13 +12,17 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.CharsetUtil;
+import site.binghai.davinci.common.def.DataBundle;
 import site.binghai.davinci.common.utils.SocketDataBundleTools;
 
 import java.nio.charset.Charset;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class Client2ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
     private ChannelHandlerContext channelHandlerContext;
     private boolean asDavinciWorker;
+    private BlockingQueue<Object> blockingQueue;
 
     public Client2ServerHandler(boolean asDavinciWorker) {
         this.asDavinciWorker = asDavinciWorker;
@@ -32,14 +36,32 @@ public abstract class Client2ServerHandler extends SimpleChannelInboundHandler<B
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("channel to server opened: " + ctx.channel().localAddress() + " channelActive");
         channelHandlerContext = ctx;
+        blockingQueue = new LinkedBlockingQueue<>();
+        workerStart();
         post(asDavinciWorker ? SocketDataBundleTools.asClient() : SocketDataBundleTools.asServer());
+    }
+
+    private final void workerStart() {
+        new Thread() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Object data = blockingQueue.take();
+                        channelHandlerContext.writeAndFlush(Unpooled.copiedBuffer(data.toString(), CharsetUtil.UTF_8)); // 必须有flush
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
     }
 
     /**
      * 数据发送方法
      */
     public void post(Object data) {
-        channelHandlerContext.writeAndFlush(Unpooled.copiedBuffer(data.toString(), CharsetUtil.UTF_8)); // 必须有flush
+        blockingQueue.add(data);
     }
 
     /**
@@ -54,7 +76,13 @@ public abstract class Client2ServerHandler extends SimpleChannelInboundHandler<B
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
         ByteBuf buf = msg.readBytes(msg.readableBytes());
-        serverMessageCome(buf.toString(Charset.forName("utf-8")));
+        String message = buf.toString(Charset.forName("utf-8"));
+        while (message.contains("}{")) {
+            int idx = message.indexOf("}{");
+            serverMessageCome(message.substring(0, idx + 1));
+            message = message.substring(idx + 1, message.length());
+        }
+        serverMessageCome(message);
     }
 
 
