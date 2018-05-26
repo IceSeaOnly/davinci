@@ -1,7 +1,9 @@
 package site.binghai.davinci.client.reflect;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 import site.binghai.davinci.client.socket.ServiceConnector;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.concurrent.Future;
@@ -29,11 +31,12 @@ public class ServiceInvocationHandler implements InvocationHandler {
         /** 远程过程begin */
         Future<Call> callFuture = ServiceConnector.getInstance().post(call);
         call = callFuture.get(3, TimeUnit.SECONDS);
-        Object returnResult = call.getResult();
         /** 远程过程end */
-        if(returnResult instanceof Exception){
-            throw (Throwable) returnResult;
+        if (call.getExceptionMessage() != null) {
+            throw new Exception(call.getExceptionMessage());
         }
-        return returnResult;
+        Object returnResult = call.getResult();
+        String data = returnResult.toString();
+        return JSONObject.parseObject(data, method.getReturnType());
     }
 }

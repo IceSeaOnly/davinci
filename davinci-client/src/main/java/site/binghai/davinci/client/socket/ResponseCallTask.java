@@ -42,7 +42,8 @@ public class ResponseCallTask implements Runnable {
     }
 
     private void returnException(Exception e) {
-        call.setResult(e);
+        call.setResult(null);
+        call.setExceptionMessage(e.getMessage());
         handler.post(JSONObject.toJSONString(call));
     }
 }

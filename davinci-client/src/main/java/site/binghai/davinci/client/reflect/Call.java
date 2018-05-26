@@ -18,11 +18,9 @@ public class Call implements Serializable {
     private String methodName; // 调用的方法名
     private Class<?>[] paramTypes; // 方法参数类型
     private Object[] params; // 调用方法时传入的参数值
-    /**
-     * 表示方法的执行结果 如果方法正常执行,则 result 为方法返回值,
-     * 如果方法抛出异常,那么 result 为该异常。
-     */
+
     private Object result;
+    private String exceptionMessage;
 
     public Call() {
         this.token = UUID.randomUUID().toString();

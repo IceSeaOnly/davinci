@@ -59,4 +59,18 @@ public class DavinciServicesService extends BaseService<DavinciService> {
             update(v);
         });
     }
+
+    public List<DavinciService> list(Integer page, String appName, String status, String method) {
+        DavinciService exmaple = new DavinciService();
+        if(status != null){
+            exmaple.setOnLine(status.equals("onLine")?Boolean.TRUE:Boolean.FALSE);
+        }
+        if(appName != null){
+            exmaple.setAppName(appName);
+        }
+        if(method != null){
+            exmaple.setMethodName(method);
+        }
+        return pageQuery(exmaple,page,10);
+    }
 }

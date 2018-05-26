@@ -16,7 +16,7 @@ import site.binghai.davinci.server.service.DavinciServicesService;
 @RestController
 @RequestMapping("/")
 @CrossOrigin("*")
-public class ServiceLookController extends BaseController implements InitializingBean{
+public class ServiceLookController extends BaseController implements InitializingBean {
     @Autowired
     private DavinciServicesService davinciServicesService;
 
@@ -38,9 +38,14 @@ public class ServiceLookController extends BaseController implements Initializin
     }
 
     @RequestMapping("serviceList")
-    public Object serviceList() {
+    public Object serviceList(Integer page, String appName, String status, String method) {
         JSONObject data = newJSONObject();
-        data.put("list", davinciServicesService.findAll(9999));
+        long sum = davinciServicesService.count();
+        data.put("total", sum);
+        data.put("page", page);
+        data.put("pageSize", 10);
+        data.put("totalPage", sum / 10 + 1);
+        data.put("list", davinciServicesService.list(page > 1 ? page - 1 : 0, appName, status, method));
         return success(data, null);
     }
 
