@@ -54,7 +54,7 @@
     </dependencies>
 
     <build>
-        <finalName>mq</finalName>  <!--最后的包文件名-->
+        <finalName>server</finalName>  <!--最后的包文件名-->
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
