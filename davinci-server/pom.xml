@@ -52,4 +52,19 @@
             <scope>runtime</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>mq</finalName>  <!--最后的包文件名-->
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>1.5.4.RELEASE</version>
+                <configuration>
+                    <mainClass>site.binghai.davinci.App</mainClass> <!--主类 包含main-->
+                    <layout>JAR</layout>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
