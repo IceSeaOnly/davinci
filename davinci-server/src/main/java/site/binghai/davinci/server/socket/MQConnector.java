@@ -1,6 +1,5 @@
 package site.binghai.davinci.server.socket;
 
-import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandler;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -24,7 +23,6 @@ import java.util.Map;
  * GitHub: https://github.com/IceSeaOnly
  */
 @Service
-@Log4j
 public class MQConnector extends Client implements InitializingBean, ApplicationListener<ContextRefreshedEvent> {
     private Client2ServerHandler client2ServerHandler;
     @Autowired
@@ -37,7 +35,7 @@ public class MQConnector extends Client implements InitializingBean, Application
 
     @Override
     protected void onConnected() {
-        log.info("MQ connected succeed.");
+        logger.info("MQ connected succeed.");
     }
 
     @Override
@@ -48,6 +46,11 @@ public class MQConnector extends Client implements InitializingBean, Application
     @Override
     protected int getPort() {
         return configParams.getMqServerPort();
+    }
+
+    @Override
+    protected String getAppName() {
+        return "SEED_SERVER";
     }
 
     @Override
@@ -70,10 +73,10 @@ public class MQConnector extends Client implements InitializingBean, Application
     @Override
     public void afterPropertiesSet() throws Exception {
         observers = new HashMap<>();
-        client2ServerHandler = new Client2ServerHandler(false) {
+        client2ServerHandler = new Client2ServerHandler(false, getAppName(), getHost(), getPort()) {
             @Override
             protected void whenExceptionCloseChannel(Throwable cause) {
-                log.error("Connect2MQ error!", cause);
+                logger.error("Connect2MQ error!", cause);
             }
 
             @Override
@@ -81,7 +84,7 @@ public class MQConnector extends Client implements InitializingBean, Application
                 try {
                     handleMessage(s);
                 } catch (Exception e) {
-                    log.error("handle message error!message:" + s, e);
+                    logger.error("handle message error!message:" + s, e);
                 }
             }
         };
@@ -93,7 +96,7 @@ public class MQConnector extends Client implements InitializingBean, Application
         if (observer != null) {
             observer.putData(dataBundle.getData());
         } else {
-            log.error("no processor for this message :" + s);
+            logger.error("no processor for this message :" + s);
         }
     }
 }

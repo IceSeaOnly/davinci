@@ -15,7 +15,6 @@ import java.util.*;
  * GitHub: https://github.com/IceSeaOnly
  */
 @Service
-@Log4j
 public class MethodMapProcessor extends BaseProcessor {
     @Autowired
     private MethodsMapper methodsMapper;
@@ -27,7 +26,7 @@ public class MethodMapProcessor extends BaseProcessor {
 
     @Override
     public void putData(Object data) {
-        log.info("updating remote services map...");
+        logger.info("updating remote services map...");
 
         Map<String, List<HostConfig>> maps = new HashMap<>();
         JSONObject obj = JSONObject.parseObject(data.toString());

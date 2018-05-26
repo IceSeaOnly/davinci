@@ -11,6 +11,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import site.binghai.davinci.common.utils.BaseBean;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
@@ -19,7 +20,7 @@ import java.nio.charset.Charset;
  * Created by IceSea on 2018/4/2.
  * GitHub: https://github.com/IceSeaOnly
  */
-public abstract class Client {
+public abstract class Client extends BaseBean {
     public void setup() throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
@@ -55,6 +56,8 @@ public abstract class Client {
     protected abstract String getHost();
 
     protected abstract int getPort();
+
+    protected abstract String getAppName();
 
     public abstract ChannelHandler clientHandler();
 }

@@ -7,12 +7,10 @@ package site.binghai.davinci.common.sockets;
  */
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.CharsetUtil;
-import site.binghai.davinci.common.def.DataBundle;
 import site.binghai.davinci.common.utils.SocketDataBundleTools;
 
 import java.nio.charset.Charset;
@@ -24,8 +22,15 @@ public abstract class Client2ServerHandler extends SimpleChannelInboundHandler<B
     private boolean asDavinciWorker;
     private BlockingQueue<Object> blockingQueue;
 
-    public Client2ServerHandler(boolean asDavinciWorker) {
+    private String appName;
+    private String host;
+    private Integer port;
+
+    public Client2ServerHandler(boolean asDavinciWorker, String appName, String host, int port) {
         this.asDavinciWorker = asDavinciWorker;
+        this.appName = appName;
+        this.host = host;
+        this.port = port;
     }
 
     /**
@@ -38,7 +43,7 @@ public abstract class Client2ServerHandler extends SimpleChannelInboundHandler<B
         channelHandlerContext = ctx;
         blockingQueue = new LinkedBlockingQueue<>();
         workerStart();
-        post(asDavinciWorker ? SocketDataBundleTools.asClient() : SocketDataBundleTools.asServer());
+        post(asDavinciWorker ? SocketDataBundleTools.asClient(appName, host, port) : SocketDataBundleTools.asServer());
     }
 
     private final void workerStart() {
@@ -71,20 +76,35 @@ public abstract class Client2ServerHandler extends SimpleChannelInboundHandler<B
      */
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("channel to server closed! " + ctx.channel().localAddress() + "channelInactive");
+        onClientClosed();
     }
+
+    protected void onClientClosed() {
+
+    }
+
+    private String last = null;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
         ByteBuf buf = msg.readBytes(msg.readableBytes());
         String message = buf.toString(Charset.forName("utf-8"));
+        if (last != null) {
+            message = last + message;
+            last = null;
+        }
         while (message.contains("}{")) {
             int idx = message.indexOf("}{");
-            serverMessageCome(message.substring(0, idx + 1));
+            String cut = message.substring(0, idx + 1);
+            serverMessageCome(cut);
             message = message.substring(idx + 1, message.length());
         }
-        serverMessageCome(message);
+        if (!SocketDataBundleTools.isRightJson(message)) {
+            last = message;
+        } else {
+            serverMessageCome(message);
+        }
     }
-
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {

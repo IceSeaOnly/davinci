@@ -1,9 +1,10 @@
 package site.binghai.davinci.client.monitor;
 
-import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import site.binghai.davinci.common.def.MonitorReport;
+import site.binghai.davinci.common.utils.BaseBean;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,8 +17,7 @@ import java.util.concurrent.Executors;
  * GitHub: https://github.com/IceSeaOnly
  */
 @Component
-@Log4j
-public class MonitorClient implements InitializingBean {
+public class MonitorClient extends BaseBean implements InitializingBean {
     private static ConcurrentLinkedQueue<MonitorReport> reports;
     private ExecutorService executorService;
 

@@ -7,6 +7,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.handler.codec.string.StringEncoder;
+import site.binghai.davinci.common.utils.BaseBean;
 
 import java.nio.charset.Charset;
 
@@ -14,7 +15,7 @@ import java.nio.charset.Charset;
  * Created by IceSea on 2018/4/2.
  * GitHub: https://github.com/IceSeaOnly
  */
-public abstract class Server {
+public abstract class Server extends BaseBean {
 
     public void setup() throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();

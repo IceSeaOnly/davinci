@@ -2,7 +2,6 @@ package site.binghai.davinci.client.socket;
 
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandler;
-import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -23,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * 连接到MQ，以获取全局通知消息
  */
 @Service
-@Log4j
 public class MQConnector extends Client implements InitializingBean, ApplicationListener<ContextRefreshedEvent> {
     @Autowired
     private ConfigAdapter configAdapter;
@@ -46,6 +44,13 @@ public class MQConnector extends Client implements InitializingBean, Application
         localServiceProvider.postService(client2ServerHandler);
     }
 
+    /**
+     * 重发本地服务
+     * */
+    public void rePublishLocalService(){
+        onConnected();
+    }
+
     @Override
     protected String getHost() {
         return configAdapter.getMqServerIp();
@@ -54,6 +59,11 @@ public class MQConnector extends Client implements InitializingBean, Application
     @Override
     protected int getPort() {
         return configAdapter.getMqServerPort();
+    }
+
+    @Override
+    protected String getAppName() {
+        return configAdapter.getAppName();
     }
 
     @Override
@@ -78,10 +88,10 @@ public class MQConnector extends Client implements InitializingBean, Application
     @Override
     public void afterPropertiesSet() throws Exception {
         processors = new ConcurrentHashMap<>();
-        client2ServerHandler = new Client2ServerHandler(true) {
+        client2ServerHandler = new Client2ServerHandler(true, getAppName(), getHost(), getPort()) {
             @Override
             protected void whenExceptionCloseChannel(Throwable cause) {
-                log.error("Connect2MQ error!", cause);
+                logger.error("Connect2MQ error!", cause);
             }
 
             @Override
@@ -91,7 +101,7 @@ public class MQConnector extends Client implements InitializingBean, Application
                 if (processor != null) {
                     processor.putData(dataBundle.getData());
                 } else {
-                    log.error("no processor for date type:" + dataBundle.getType());
+                    logger.error("no processor for date type:" + dataBundle.getType());
                 }
             }
         };

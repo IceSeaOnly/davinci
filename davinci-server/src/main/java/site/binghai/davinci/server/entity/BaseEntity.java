@@ -10,8 +10,8 @@ import javax.persistence.MappedSuperclass;
  */
 @MappedSuperclass
 public abstract class BaseEntity {
-    private boolean hasDeleted;
-    private long created;
+    private Boolean hasDeleted;
+    private Long created;
     private String createdTime;
 
     public BaseEntity() {
@@ -20,19 +20,21 @@ public abstract class BaseEntity {
         createdTime = TimeTools.format(created);
     }
 
-    public boolean isHasDeleted() {
+    public abstract Long getId();
+
+    public Boolean getHasDeleted() {
         return hasDeleted;
     }
 
-    public void setHasDeleted(boolean hasDeleted) {
+    public void setHasDeleted(Boolean hasDeleted) {
         this.hasDeleted = hasDeleted;
     }
 
-    public long getCreated() {
+    public Long getCreated() {
         return created;
     }
 
-    public void setCreated(long created) {
+    public void setCreated(Long created) {
         this.created = created;
     }
 
@@ -43,6 +45,4 @@ public abstract class BaseEntity {
     public void setCreatedTime(String createdTime) {
         this.createdTime = createdTime;
     }
-
-    public abstract Long getId();
 }

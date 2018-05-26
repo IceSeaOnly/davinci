@@ -3,16 +3,15 @@ package site.binghai.davinci.client.socket;
 
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandler;
-import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import site.binghai.davinci.client.reflect.Call;
 import site.binghai.davinci.client.reflect.MethodsMapper;
 import site.binghai.davinci.common.def.HostConfig;
 import site.binghai.davinci.common.sockets.Client;
 import site.binghai.davinci.common.sockets.Client2ServerHandler;
+import site.binghai.davinci.common.utils.BaseBean;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -23,8 +22,7 @@ import java.util.concurrent.*;
  * 每个远程类创建一个通讯代理对象，远程过程在这里进行
  */
 @Service
-@Log4j
-public class ServiceConnector implements InitializingBean {
+public class ServiceConnector extends BaseBean implements InitializingBean {
     @Autowired
     private MethodsMapper methodsMapper;
     private ExecutorService executor;
@@ -55,23 +53,29 @@ public class ServiceConnector implements InitializingBean {
     }
 
 
-
     /**
      * 同步方式创建新的服务连接
      */
     private synchronized Client2ServerHandler buildClient(HostConfig config) throws InterruptedException {
         if (clients.get(config) != null) return clients.get(config);
         BlockingQueue<Boolean> waiter = new LinkedBlockingQueue<>();
-        Client2ServerHandler client2ServerHandler = new Client2ServerHandler(true) {
+        Client2ServerHandler client2ServerHandler = new Client2ServerHandler(true, config.getAppName(), config.getIp(), config.getPort()) {
             @Override
             protected void whenExceptionCloseChannel(Throwable cause) {
-                log.error("channel closed caused by ", cause);
+                logger.error("channel closed caused by ", cause);
+                clients.remove(config);
             }
 
             @Override
             protected void serverMessageCome(String s) {
                 Call call = JSONObject.parseObject(s, Call.class);
                 futurePool.put(call.getToken(), call);
+            }
+
+            @Override
+            protected void onClientClosed() {
+                logger.warn("channel closed caused...");
+                clients.remove(config);
             }
         };
         buildConnection(config, waiter, client2ServerHandler);
@@ -97,6 +101,11 @@ public class ServiceConnector implements InitializingBean {
                     @Override
                     protected int getPort() {
                         return config.getPort();
+                    }
+
+                    @Override
+                    protected String getAppName() {
+                        return config.getAppName();
                     }
 
                     @Override

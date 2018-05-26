@@ -26,6 +26,7 @@ public class MethodsMapper implements InitializingBean {
             if (!serviceMapper.containsKey(k)) {
                 serviceMapper.put(k, v);
             } else {
+                serviceMapper.get(k).clear();
                 serviceMapper.get(k).addAll(v);
             }
         });

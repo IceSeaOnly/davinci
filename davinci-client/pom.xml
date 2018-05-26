@@ -6,12 +6,12 @@
 
     <groupId>site.binghai.davinci</groupId>
     <artifactId>davinci-client</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.2-RELEASE</version>
 
     <parent>
         <groupId>site.binghai.davinci</groupId>
         <artifactId>davinci</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.2-RELEASE</version>
     </parent>
 
     <dependencies>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>site.binghai.davinci</groupId>
             <artifactId>davinci-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.2-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

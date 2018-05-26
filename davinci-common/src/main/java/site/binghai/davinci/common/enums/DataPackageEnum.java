@@ -13,6 +13,7 @@ public enum DataPackageEnum {
     TEST_TO_CLIENT(4,"种子机发往工作机的测试信号"),
     SERVICE_MAP_DATA(5,"种子机下发的最新服务列表"),
     POST_LOCAL_SERVICES(6,"工作机广播本地服务列表"),
+    WORKER_OFFLINE(7,"工作机离线"),
 
     ;
     private int code;

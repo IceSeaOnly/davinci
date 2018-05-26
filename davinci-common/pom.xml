@@ -6,12 +6,12 @@
 
     <groupId>site.binghai.davinci</groupId>
     <artifactId>davinci-common</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.2-RELEASE</version>
 
     <parent>
         <groupId>site.binghai.davinci</groupId>
         <artifactId>davinci</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.2-RELEASE</version>
     </parent>
     
     <dependencies>
@@ -36,6 +36,10 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
 </project>

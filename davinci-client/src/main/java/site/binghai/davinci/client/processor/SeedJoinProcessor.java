@@ -1,28 +1,29 @@
-package site.binghai.davinci.server.obervers;
+package site.binghai.davinci.client.processor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import site.binghai.davinci.client.socket.MQConnector;
 import site.binghai.davinci.common.enums.DataPackageEnum;
-import site.binghai.davinci.server.service.MethodMapService;
 
 /**
- * Created by IceSea on 2018/5/23.
+ * Created by IceSea on 2018/5/26.
  * GitHub: https://github.com/IceSeaOnly
+ * 种子机上线监听
  */
 @Service
-public class OnNewWokerJoinObserver extends BaseObserver {
+public class SeedJoinProcessor extends BaseProcessor {
     @Autowired
-    private MethodMapService methodMapService;
+    private MQConnector mqConnector;
 
     @Override
     public DataPackageEnum getAcceteType() {
-        return DataPackageEnum.DAVINCI_CLIENT;
+        return DataPackageEnum.DAVINCI_SERVER;
     }
 
     @Override
     public void putData(Object data) {
-        logger.info("new client joined so we broadcast the service map.");
-        methodMapService.mapChanged();
+        logger.info("new seed server join,republish services...");
+        mqConnector.rePublishLocalService();
     }
 
     @Override

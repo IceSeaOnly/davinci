@@ -1,7 +1,5 @@
 package site.binghai.davinci.server.service;
 
-import com.alibaba.fastjson.JSONObject;
-import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +8,11 @@ import site.binghai.davinci.common.def.DataBundle;
 import site.binghai.davinci.common.def.HostConfig;
 import site.binghai.davinci.common.enums.DataPackageEnum;
 import site.binghai.davinci.common.sockets.Client2ServerHandler;
+import site.binghai.davinci.common.utils.SocketDataBundleTools;
 import site.binghai.davinci.server.socket.MQConnector;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,11 +22,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * “服务发现”服务
  */
 @Service
-@Log4j
 public class MethodMapService implements InitializingBean {
     private ConcurrentHashMap<String, List<HostConfig>> methodsMap;
     @Autowired
     private MQConnector mqConnector;
+    @Autowired
+    private DavinciServicesService davinciServicesService;
 
     public void updateMethods(HostConfig host, List<String> methods) {
         methods.forEach(v -> {
@@ -36,14 +37,29 @@ public class MethodMapService implements InitializingBean {
             }
             if (!ls.contains(host)) ls.add(host);
             methodsMap.put(v, ls);
+            davinciServicesService.onLine(host, v);
         });
 
         mapChanged();
     }
 
+    public void hostOffline(String host, String appName) {
+        methodsMap.forEach((k, v) -> {
+            Iterator<HostConfig> it = v.iterator();
+            while (it.hasNext()){
+                HostConfig config = it.next();
+                if (config.getAppName().equals(appName) && config.getIp().equals(host)) {
+                    davinciServicesService.offLine(config);
+                    it.remove();
+                }
+            }
+        });
+        mapChanged();
+    }
+
     public void mapChanged() {
         DataBundle dataBundle = new DataBundle(methodsMap, DataPackageEnum.SERVICE_MAP_DATA);
-        ((Client2ServerHandler) mqConnector.clientHandler()).post(JSONObject.toJSONString(dataBundle));
+        ((Client2ServerHandler) mqConnector.clientHandler()).post(SocketDataBundleTools.toPostData(dataBundle));
     }
 
     @Override

@@ -5,6 +5,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
+import lombok.Data;
+import site.binghai.davinci.common.utils.SocketDataBundleTools;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -15,11 +17,16 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Created by IceSea on 2018/4/2.
  * GitHub: https://github.com/IceSeaOnly
  */
+@Data
 public abstract class Server2ClientHandler extends ChannelInboundHandlerAdapter {
     private ChannelHandlerContext channelHandlerContext;
     private boolean actived = false;
     private Boolean targetIsDavinciClient;
     private BlockingQueue<Object> blockingQueue;
+
+    private String remoteHost;
+    private Integer remotePort;
+    private String remoteAppName;
 
 
     public boolean isActived() {
@@ -66,6 +73,7 @@ public abstract class Server2ClientHandler extends ChannelInboundHandlerAdapter 
         actived = false;
         ctx.disconnect();
         ctx.close();
+        whenChannelClosed();
     }
 
     public void post(Object data) {
@@ -87,18 +95,28 @@ public abstract class Server2ClientHandler extends ChannelInboundHandlerAdapter 
     /**
      * 功能：读取服务器发送过来的信息
      */
+
+    private String last = null;
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // 第一种：接收字符串时的处理
         ByteBuf buf = (ByteBuf) msg;
         String message = getMessage(buf);
-
+        if (last != null) {
+            message = last + message;
+            last = null;
+        }
         while (message.contains("}{")) {
             int idx = message.indexOf("}{");
             clientMessageCome(message.substring(0, idx + 1));
             message = message.substring(idx + 1, message.length());
         }
-        clientMessageCome(message);
+        if (!SocketDataBundleTools.isRightJson(message)) {
+            last = message;
+        } else {
+            clientMessageCome(message);
+        }
     }
 
 
@@ -126,15 +144,10 @@ public abstract class Server2ClientHandler extends ChannelInboundHandlerAdapter 
         whenExceptionCloseContext(cause);
     }
 
-    public Boolean getTargetIsDavinciClient() {
-        return targetIsDavinciClient;
-    }
-
-    public void setTargetIsDavinciClient(Boolean targetIsDavinciClient) {
-        this.targetIsDavinciClient = targetIsDavinciClient;
-    }
 
     protected abstract void whenExceptionCloseContext(Throwable cause);
 
     protected abstract void clientMessageCome(String rev);
+
+    protected abstract void whenChannelClosed();
 }

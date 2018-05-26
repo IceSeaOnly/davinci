@@ -1,5 +1,6 @@
 package site.binghai.davinci.mq.socket;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandler;
 import site.binghai.davinci.common.def.DataBundle;
 import site.binghai.davinci.common.enums.DataPackageEnum;
@@ -35,10 +36,27 @@ public class ClientManager extends Thread {
             protected void clientMessageCome(String rev) {
                 HandleMessageFromClient(this, rev);
             }
+
+            @Override
+            protected void whenChannelClosed() {
+                if (getTargetIsDavinciClient()) {
+                    workerOffline(getRemoteHost(), getRemoteAppName());
+                    clients.remove(this);
+                    System.out.println("one of " + getRemoteAppName() + " worker offline @ " + getRemoteHost());
+                }
+            }
         };
 
         clients.add(handler);
         return handler;
+    }
+
+    private void workerOffline(String remoteHost, String remoteAppName) {
+        JSONObject obj = new JSONObject();
+        obj.put("host", remoteHost);
+        obj.put("appName", remoteAppName);
+        DataBundle dataBundle = new DataBundle(obj, DataPackageEnum.WORKER_OFFLINE);
+        toS.add(dataBundle);
     }
 
     private void HandleMessageFromClient(Server2ClientHandler server2ClientHandler, String rev) {
@@ -52,6 +70,10 @@ public class ClientManager extends Thread {
         switch (dataBundle.getType()) {
             case DAVINCI_CLIENT:
                 System.out.println("A new Davinci worker Connected.");
+                JSONObject obj = JSONObject.parseObject(dataBundle.getData().toString());
+                server2ClientHandler.setRemoteHost(obj.getString("host"));
+                server2ClientHandler.setRemotePort(obj.getInteger("port"));
+                server2ClientHandler.setRemoteAppName(obj.getString("appName"));
                 server2ClientHandler.setTargetIsDavinciClient(Boolean.TRUE);
                 break;
             case DAVINCI_SERVER:

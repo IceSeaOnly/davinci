@@ -2,7 +2,6 @@ package site.binghai.davinci.client.socket;
 
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandler;
-import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ import java.util.concurrent.Executors;
  * 本地服务提供
  */
 @Service
-@Log4j
 public class LocalServiceProvider extends Server implements InitializingBean {
     @Autowired
     private ConfigAdapter configAdapter;
@@ -36,8 +34,8 @@ public class LocalServiceProvider extends Server implements InitializingBean {
      * 发布本地服务
      */
     public void postService(Client2ServerHandler client2ServerHandler) {
-        if (contextListener.getServices().size() == 0){
-            log.info("no local method need to post.");
+        if (contextListener.getServices().size() == 0) {
+            logger.info("no local method need to post.");
             return;
         }
         JSONObject obj = new JSONObject();
@@ -57,7 +55,7 @@ public class LocalServiceProvider extends Server implements InitializingBean {
         return new Server2ClientHandler() {
             @Override
             protected void whenExceptionCloseContext(Throwable cause) {
-                log.error("channel close caused by ", cause);
+                logger.error("channel close caused by ", cause);
             }
 
             @Override
@@ -65,6 +63,11 @@ public class LocalServiceProvider extends Server implements InitializingBean {
                 Call call = JSONObject.parseObject(rev, Call.class);
                 ResponseCallTask task = new ResponseCallTask(call, contextListener, this);
                 executor.execute(task);
+            }
+
+            @Override
+            protected void whenChannelClosed() {
+                logger.warn("channel closed! remote app:" + getRemoteAppName() + " @ " + getRemoteHost() + ":" + getRemotePort());
             }
         };
     }
